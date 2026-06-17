@@ -2,7 +2,20 @@
 
 Minimal reproduction for [voidzero-dev/vite-plus#1076](https://github.com/voidzero-dev/vite-plus/issues/1076).
 
-## Bug description
+## Status: Fixed in vite-plus v0.2.0
+
+Upgrading vite-plus `0.1.13` -> `0.2.0` fixes the crash. `vp test` now passes:
+
+```
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+```
+
+v0.2.0 ([#1588](https://github.com/voidzero-dev/vite-plus/pull/1588)) **removes the rebundled `@voidzero-dev/vite-plus-test` wrapper** and runs upstream `vitest` directly, so there is no longer a second `@vitest/runner` copy to desync, the dual-instance cause described below can't happen.
+
+Note: this project keeps `vitest` as a direct devDependency, so under pnpm it is hoisted to the top-level `node_modules` and the cloudflare pool resolves `vitest/worker` cleanly (no separate pnpm `No such module "vitest/worker"` issue).
+
+## Bug description (vite-plus 0.1.13, historical)
 
 When running `vp test` with `@cloudflare/vitest-pool-workers`, any test file that uses `describe()` crashes immediately with:
 
@@ -75,8 +88,8 @@ flowchart TD
 
 | Package | Version |
 |---|---|
-| vite-plus | 0.1.13 |
-| vitest | 4.1.0 |
+| vite-plus | 0.2.0 |
+| vitest | 4.1.9 |
 | @cloudflare/vitest-pool-workers | 0.13.3 |
 | wrangler | 4.76.0 |
 | Node.js | >=18 |

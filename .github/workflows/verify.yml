@@ -1,0 +1,37 @@
+name: Verify fix
+
+# Verifies that vite-plus#1076 is fixed: `vp test` (which crashed on
+# vite-plus 0.1.13) now passes on 0.2.0, alongside the plain `vitest run`
+# baseline. Triggers on the fix branch and any PR.
+
+on:
+  push:
+    branches:
+      - main
+      - 'fix/**'
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs the pnpm version from package.json `packageManager`.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22' # vite-plus 0.2.0 needs ^22.18.0 || >=24.11.0
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # The command that crashed on 0.1.13 (TypeError: ...reading 'config').
+      - name: vp test
+        run: pnpm exec vp test
+
+      # Baseline that already passed before the fix.
+      - name: vitest run
+        run: pnpm test
