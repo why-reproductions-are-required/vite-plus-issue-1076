@@ -25,12 +25,8 @@ jobs:
           node-version: '22' # vite-plus 0.2.0 needs ^22.18.0 || >=24.11.0
           cache: pnpm
 
-      # --no-frozen-lockfile: pkg.pr.new tarball deps are written to the
-      # lockfile without an `integrity` field, so a frozen install (pnpm's
-      # CI default) fails with ERR_PNPM_MISSING_TARBALL_INTEGRITY. Drop this
-      # flag once the catalog points at the published vite-plus@0.2.0.
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # The command that crashed on 0.1.13 (TypeError: ...reading 'config').
       - name: vp test
